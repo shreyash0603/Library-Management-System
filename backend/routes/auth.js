@@ -39,6 +39,7 @@ router.post("/register", async (req, res) => {
 router.post("/signin", async (req, res) => {
   try {
     console.log(req.body, "req");
+
     const user = req.body.admissionId
       ? await User.findOne({
           admissionId: req.body.admissionId,
@@ -49,14 +50,23 @@ router.post("/signin", async (req, res) => {
 
     console.log(user, "user");
 
-    !user && res.status(404).json("User not found");
+    if (!user) {
+      return res.status(404).json("User not found");
+    }
 
-    const validPass = await bcrypt.compare(req.body.password, user.password);
-    !validPass && res.status(400).json("Wrong Password");
+    const validPass = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
 
-    res.status(200).json(user);
+    if (!validPass) {
+      return res.status(400).json("Wrong Password");
+    }
+
+    return res.status(200).json(user);
   } catch (err) {
     console.log(err);
+    return res.status(500).json("Server error");
   }
 });
 

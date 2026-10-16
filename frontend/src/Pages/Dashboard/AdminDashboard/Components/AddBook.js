@@ -25,23 +25,31 @@ function AddBook() {
     useEffect(() => {
         const getAllCategories = async () => {
             try {
-                const response = await axios.get(API_URL + "api/categories/allcategories")
-                const all_categories = await response.data.map(category => (
-                    { value: `${category._id}`, text: `${category.categoryName}` }
-                ))
+                const response = await axios.get(
+                    API_URL + "api/categories/allcategories"
+                )
+
+                const all_categories = response.data.map(category => ({
+                    value: `${category._id}`,
+                    text: `${category.categoryName}`
+                }))
+
                 setAllCategories(all_categories)
             }
             catch (err) {
                 console.log(err)
             }
         }
+
         getAllCategories()
     }, [API_URL])
+
 
     /* Adding book function */
     const addBook = async (e) => {
         e.preventDefault()
         setIsLoading(true)
+
         const BookData = {
             bookName: bookName,
             alternateTitle: alternateTitle,
@@ -52,12 +60,22 @@ function AddBook() {
             categories: selectedCategories,
             isAdmin: user.isAdmin
         }
+
         try {
-            const response = await axios.post(API_URL + "api/books/addbook", BookData)
+            const response = await axios.post(
+                API_URL + "api/books/addbook",
+                BookData
+            )
+
             if (recentAddedBooks.length >= 5) {
                 recentAddedBooks.splice(-1)
             }
-            setRecentAddedBooks([response.data, ...recentAddedBooks])
+
+            setRecentAddedBooks([
+                response.data,
+                ...recentAddedBooks
+            ])
+
             setBookName("")
             setAlternateTitle("")
             setAuthor("")
@@ -65,50 +83,209 @@ function AddBook() {
             setLanguage("")
             setPublisher("")
             setSelectedCategories([])
+
             alert("Book Added Successfully 🎉")
         }
         catch (err) {
             console.log(err)
         }
+
         setIsLoading(false)
     }
 
 
+    /* Fetch all books */
     useEffect(() => {
         const getallBooks = async () => {
-            const response = await axios.get(API_URL + "api/books/allbooks")
-            setRecentAddedBooks(response.data.slice(0, 5))
+            try {
+                const response = await axios.get(
+                    API_URL + "api/books/allbooks"
+                )
+
+                setRecentAddedBooks(
+                    response.data.slice(0, 5)
+                )
+            }
+            catch (err) {
+                console.log(err)
+            }
         }
+
         getallBooks()
     }, [API_URL])
 
 
     return (
         <div>
-            <p className="dashboard-option-title">Add a Book</p>
+
+            <p className="dashboard-option-title">
+                Add a Book
+            </p>
+
             <div className="dashboard-title-line"></div>
-            <form className='addbook-form' onSubmit={addBook}>
 
-                <label className="addbook-form-label" htmlFor="bookName">Book Name<span className="required-field">*</span></label><br />
-                <input className="addbook-form-input" type="text" name="bookName" value={bookName} onChange={(e) => { setBookName(e.target.value) }} required></input><br />
+            <form
+                className='addbook-form'
+                onSubmit={addBook}
+            >
 
-                <label className="addbook-form-label" htmlFor="alternateTitle">AlternateTitle</label><br />
-                <input className="addbook-form-input" type="text" name="alternateTitle" value={alternateTitle} onChange={(e) => { setAlternateTitle(e.target.value) }}></input><br />
+                {/* Book Name */}
+                <label
+                    className="addbook-form-label"
+                    htmlFor="bookName"
+                >
+                    Book Name
+                    <span className="required-field">*</span>
+                </label>
 
-                <label className="addbook-form-label" htmlFor="author">Author Name<span className="required-field">*</span></label><br />
-                <input className="addbook-form-input" type="text" name="author" value={author} onChange={(e) => { setAuthor(e.target.value) }} required></input><br />
+                <br />
 
-                <label className="addbook-form-label" htmlFor="language">Language</label><br />
-                <input className="addbook-form-input" type="text" name="language" value={language} onChange={(e) => { setLanguage(e.target.value) }}></input><br />
+                <input
+                    className="addbook-form-input"
+                    type="text"
+                    name="bookName"
+                    value={bookName}
+                    onChange={(e) => {
+                        setBookName(e.target.value)
+                    }}
+                    required
+                />
 
-                <label className="addbook-form-label" htmlFor="publisher">Publisher</label><br />
-                <input className="addbook-form-input" type="text" name="publisher" value={publisher} onChange={(e) => { setPublisher(e.target.value) }}></input><br />
+                <br />
 
-                <label className="addbook-form-label" htmlFor="copies">No.of Copies Available<span className="required-field">*</span></label><br />
-                <input className="addbook-form-input" type="text" name="copies" value={bookCountAvailable} onChange={(e) => { setBookCountAvailable(e.target.value) }} required></input><br />
 
-                <label className="addbook-form-label" htmlFor="categories">Categories<span className="required-field">*</span></label><br />
+                {/* Alternate Title */}
+                <label
+                    className="addbook-form-label"
+                    htmlFor="alternateTitle"
+                >
+                    Alternate Title
+                </label>
+
+                <br />
+
+                <input
+                    className="addbook-form-input"
+                    type="text"
+                    name="alternateTitle"
+                    value={alternateTitle}
+                    onChange={(e) => {
+                        setAlternateTitle(e.target.value)
+                    }}
+                />
+
+                <br />
+
+
+                {/* Author */}
+                <label
+                    className="addbook-form-label"
+                    htmlFor="author"
+                >
+                    Author Name
+                    <span className="required-field">*</span>
+                </label>
+
+                <br />
+
+                <input
+                    className="addbook-form-input"
+                    type="text"
+                    name="author"
+                    value={author}
+                    onChange={(e) => {
+                        setAuthor(e.target.value)
+                    }}
+                    required
+                />
+
+                <br />
+
+
+                {/* Language */}
+                <label
+                    className="addbook-form-label"
+                    htmlFor="language"
+                >
+                    Language
+                </label>
+
+                <br />
+
+                <input
+                    className="addbook-form-input"
+                    type="text"
+                    name="language"
+                    value={language}
+                    onChange={(e) => {
+                        setLanguage(e.target.value)
+                    }}
+                />
+
+                <br />
+
+
+                {/* Publisher */}
+                <label
+                    className="addbook-form-label"
+                    htmlFor="publisher"
+                >
+                    Publisher
+                </label>
+
+                <br />
+
+                <input
+                    className="addbook-form-input"
+                    type="text"
+                    name="publisher"
+                    value={publisher}
+                    onChange={(e) => {
+                        setPublisher(e.target.value)
+                    }}
+                />
+
+                <br />
+
+
+                {/* Number of Copies */}
+                <label
+                    className="addbook-form-label"
+                    htmlFor="copies"
+                >
+                    No. of Copies Available
+                    <span className="required-field">*</span>
+                </label>
+
+                <br />
+
+                <input
+                    className="addbook-form-input"
+                    type="number"
+                    name="copies"
+                    value={bookCountAvailable || ""}
+                    onChange={(e) => {
+                        setBookCountAvailable(e.target.value)
+                    }}
+                    required
+                />
+
+                <br />
+
+
+                {/* Categories */}
+                <label
+                    className="addbook-form-label"
+                    htmlFor="categories"
+                >
+                    Categories
+                    <span className="required-field">*</span>
+                </label>
+
+                <br />
+
                 <div className="semanticdropdown">
+
                     <Dropdown
                         placeholder='Category'
                         fluid
@@ -117,34 +294,81 @@ function AddBook() {
                         selection
                         options={allCategories}
                         value={selectedCategories}
-                        onChange={(event, value) => setSelectedCategories(value.value)}
+                        onChange={(event, value) => {
+                            setSelectedCategories(value.value)
+                        }}
                     />
+
                 </div>
 
-                <input className="addbook-submit" type="submit" value="SUBMIT" disabled={isLoading}></input>
+
+                {/* Submit */}
+                <input
+                    className="addbook-submit"
+                    type="submit"
+                    value="SUBMIT"
+                    disabled={isLoading}
+                />
+
             </form>
+
+
+            {/* Recently Added Books */}
             <div>
-                <p className="dashboard-option-title">Recently Added Books</p>
+
+                <p className="dashboard-option-title">
+                    Recently Added Books
+                </p>
+
                 <div className="dashboard-title-line"></div>
+
                 <table className='admindashboard-table'>
-                    <tr>
-                        <th>S.No</th>
-                        <th>Book Name</th>
-                        <th>Added Date</th>
-                    </tr>
-                    {
-                        recentAddedBooks.map((book, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>{book.bookName}</td>
-                                    <td>{book.createdAt.substring(0, 10)}</td>
-                                </tr>
-                            )
-                        })
-                    }
+
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Book Name</th>
+                            <th>Added Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {
+                            recentAddedBooks.map((book, index) => {
+
+                                return (
+                                    <tr key={book._id || index}>
+
+                                        <td>
+                                            {index + 1}
+                                        </td>
+
+                                        <td>
+                                            {book.bookName || "Unknown Book"}
+                                        </td>
+
+                                        <td>
+                                            {
+                                                book.createdAt
+                                                    ? new Date(
+                                                        book.createdAt
+                                                    ).toLocaleDateString()
+                                                    : "N/A"
+                                            }
+                                        </td>
+
+                                    </tr>
+                                )
+                            })
+                        }
+
+                    </tbody>
+
                 </table>
+
             </div>
+
         </div>
     )
 }
